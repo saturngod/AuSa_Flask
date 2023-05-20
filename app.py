@@ -1,8 +1,6 @@
 from flask import Flask, request
 from pusher import Pusher
-import json
-import os
-from pydub import AudioSegment
+from upload import save_file
 
 app = Flask(__name__)
 
@@ -15,19 +13,11 @@ pusher = Pusher(
       ssl=True
 )
 
-def convert_to_wav(input_file):
-    # Load the input audio file
-    audio = AudioSegment.from_file(input_file)
 
-    # Create the output file path with the .wav extension
-    output_file = os.path.splitext(input_file)[0] + '.wav'
-
-    # Convert to WAV format
-    audio.export(output_file, format='wav')
 
 @app.route("/send")
 def send_data():
-    pusher.trigger("result-channel","show","success")
+    pusher.trigger("result-channel","show","Female, Postive")
     return "done";
 
 @app.route("/upload",methods = ['POST'])
@@ -37,15 +27,8 @@ def upload_data():
     file = request.files['file']
     if file.filename == "":
         return "No file selected", 400
-    # Get the current directory
-    current_dir = os.getcwd()
-    audio_dir = os.path.join(current_dir,"audio")
-    # Join the current directory with the filename
-    file_path = os.path.join(audio_dir, file.filename)
-    # Save the file to the specified path
-    file_path = os.path.join(audio_dir, file.filename)
-    file.save(file_path)
-    convert_to_wav(file_path)
+    
+    save_file(file)
 
     return 'File saved successfully'
 
