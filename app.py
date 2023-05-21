@@ -1,6 +1,7 @@
 from flask import Flask, request
 from pusher import Pusher
 from upload import save_file
+from model import loadModel
 
 app = Flask(__name__)
 
@@ -13,11 +14,20 @@ pusher = Pusher(
       ssl=True
 )
 
+@app.route("/load")
+def load_data():
+    result = loadModel("audio/file_1863_1684609878825.wav")
+    label2int = {
+        "-1": "negative",
+        "0" : "neutral",
+        "1" : "positive",
+    }
 
+    return label2int[str(result)];
 
 @app.route("/send")
 def send_data():
-    pusher.trigger("result-channel","show","Female, Postive")
+    pusher.trigger("result-channel","show","Male, Postive")
     return "done";
 
 @app.route("/upload",methods = ['POST'])
@@ -28,9 +38,19 @@ def upload_data():
     if file.filename == "":
         return "No file selected", 400
     
-    save_file(file)
+    wav_file = save_file(file)
 
-    return 'File saved successfully'
+    result = loadModel(wav_file)
+
+    labelValue = {
+        "-1": "negative",
+        "0" : "neutral",
+        "1" : "positive",
+    }
+
+    pusher.trigger("result-channel","show",labelValue[str(result)])
+
+    return "done"
 
 
 if __name__ == '__main__':
