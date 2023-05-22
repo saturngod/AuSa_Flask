@@ -1,7 +1,5 @@
-import pandas as pd
+
 import numpy as np
-import os
-import tqdm
 import librosa
 import tensorflow as tf
 
@@ -51,7 +49,9 @@ def extract_feature(file_name, **kwargs):
 def loadModel(file):
     model = tf.keras.models.load_model('model.h5')
 
-    features = extract_feature(file, mel=True).reshape(1, -1)
+    features = extract_feature(file, mfcc=True)
+    features = np.expand_dims(features, axis=0)  # Add an extra dimension at the beginning
+    features = np.expand_dims(features, axis=1)
 
     newpred = model.predict(features)
     max_index = np.argmax(newpred)

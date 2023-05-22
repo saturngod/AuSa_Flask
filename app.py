@@ -16,13 +16,12 @@ pusher = Pusher(
 
 @app.route("/load")
 def load_data():
-    result = loadModel("audio/file_1863_1684609878825.wav")
+    result = loadModel("audio/353.wav")
     label2int = {
-        "-1": "negative",
-        "0" : "neutral",
-        "1" : "positive",
+        "0": "negative",
+        "1" : "neutral",
+        "2" : "positive",
     }
-
     return label2int[str(result)];
 
 @app.route("/send")
@@ -43,9 +42,9 @@ def upload_data():
     result = loadModel(wav_file)
 
     labelValue = {
-        "-1": "negative",
-        "0" : "neutral",
-        "1" : "positive",
+        "0": "negative",
+        "1" : "neutral",
+        "2" : "positive",
     }
 
     pusher.trigger("result-channel","show",labelValue[str(result)])
