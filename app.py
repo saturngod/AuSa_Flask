@@ -5,6 +5,12 @@ from model import loadModel
 
 app = Flask(__name__)
 
+label2int = {
+        "0": "negative",
+        "1" : "neutral",
+        "2" : "positive",
+}
+
 #Configure pusher
 pusher = Pusher(
       app_id='1553130',
@@ -16,12 +22,9 @@ pusher = Pusher(
 
 @app.route("/load")
 def load_data():
-    result = loadModel("audio/353.wav")
-    label2int = {
-        "0": "negative",
-        "1" : "neutral",
-        "2" : "positive",
-    }
+    result = loadModel("audio/109.wav")
+    
+    
     return label2int[str(result)];
 
 @app.route("/send")
@@ -41,13 +44,7 @@ def upload_data():
 
     result = loadModel(wav_file)
 
-    labelValue = {
-        "0": "negative",
-        "1" : "neutral",
-        "2" : "positive",
-    }
-
-    pusher.trigger("result-channel","show",labelValue[str(result)])
+    pusher.trigger("result-channel","show",label2int[str(result)])
 
     return "done"
 

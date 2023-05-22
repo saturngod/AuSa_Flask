@@ -2,6 +2,7 @@
 import numpy as np
 import librosa
 import tensorflow as tf
+import sys
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout, Bidirectional
@@ -52,8 +53,11 @@ def loadModel(file):
     features = extract_feature(file, mfcc=True)
     features = np.expand_dims(features, axis=0)  # Add an extra dimension at the beginning
     features = np.expand_dims(features, axis=1)
-
+    
     newpred = model.predict(features)
-    max_index = np.argmax(newpred)
+    print("=======", file=sys.stdout);
+    print(newpred.flatten(), file=sys.stdout);
+    print("=======", file=sys.stdout);
+    max_index = np.argmax(newpred.flatten())
 
     return max_index
